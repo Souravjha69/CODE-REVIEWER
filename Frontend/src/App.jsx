@@ -10,7 +10,7 @@ function App() {
     <main>
       <div className="left">
         <div className="code"></div>
-        <div className="review"></div>
+        <div className="review">Review</div>
       </div>
       <div className="right"></div>
     </main>

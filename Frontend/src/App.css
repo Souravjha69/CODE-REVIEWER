@@ -21,4 +21,17 @@ main .left, main .right{
 }
 main .left{
 background-color: black;
+position: relative;
+}
+main .left .review{
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  background-color: rgb(220, 220, 241);
+  color: black;
+  padding: 0.5rem;
+  border-radius: 0.7rem;
+}
+main .right{
+  background-color: rgb(107, 103, 103);
 }
