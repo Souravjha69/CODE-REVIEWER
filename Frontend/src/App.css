@@ -23,14 +23,22 @@ main .left{
 background-color: black;
 position: relative;
 }
+.left .code, .code pre, .code pre code  {
+  height: 100%;
+  width: 100%;
+  
+}
 main .left .review{
   position: absolute;
   bottom: 1rem;
   right: 1rem;
   background-color: rgb(220, 220, 241);
   color: black;
-  padding: 0.5rem;
+  padding: 0.5rem 2rem;
+  font-weight: 500;
   border-radius: 0.7rem;
+  cursor: pointer;
+  user-select: none;
 }
 main .right{
   background-color: rgb(107, 103, 103);
