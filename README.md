@@ -33,8 +33,6 @@ This project leverages artificial intelligence to analyze, review, and suggest i
 
 ---
 📸 Demo
-
-(Add screenshots or a short demo video link once the UI is ready)
 Example:
 ![AI Code Reviewer Screenshot](https://github.com/Souravjha69/CODE-REVIEWER/blob/main/Screenshot.png?raw=true)
 
