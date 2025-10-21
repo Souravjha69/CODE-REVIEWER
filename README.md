@@ -79,7 +79,7 @@ PORT=5000
 
 (Add screenshots or a short demo video link once the UI is ready)
 Example:
-<img width="1667" height="915" alt="Screenshot" src="https://github.com/user-attachments/assets/10bcc2d2-b503-4e80-95b9-97e52e55c01b" />
+https://github.com/Souravjha69/CODE-REVIEWER/blob/64b154d5597a23df88b963b4c5b18bbf53488166/Screenshot.png
 
 🚀 Future Enhancements
 	•	🧩 Multi-language support (Python, Java, C++, etc.)
