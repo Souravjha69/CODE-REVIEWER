@@ -79,7 +79,7 @@ PORT=5000
 
 (Add screenshots or a short demo video link once the UI is ready)
 Example:
-https://github.com/Souravjha69/CODE-REVIEWER/blob/64b154d5597a23df88b963b4c5b18bbf53488166/Screenshot.png
+![AI Code Reviewer Screenshot](https://github.com/Souravjha69/CODE-REVIEWER/blob/main/Screenshot.png?raw=true)
 
 🚀 Future Enhancements
 	•	🧩 Multi-language support (Python, Java, C++, etc.)
