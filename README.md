@@ -32,6 +32,12 @@ This project leverages artificial intelligence to analyze, review, and suggest i
 | **Version Control** | Git & GitHub |
 
 ---
+📸 Demo
+
+(Add screenshots or a short demo video link once the UI is ready)
+Example:
+![AI Code Reviewer Screenshot](https://github.com/Souravjha69/CODE-REVIEWER/blob/main/Screenshot.png?raw=true)
+
 
 ## ⚙️ Installation  
 
@@ -75,11 +81,7 @@ PORT=5000
 
 ⸻
 
-📸 Demo
 
-(Add screenshots or a short demo video link once the UI is ready)
-Example:
-![AI Code Reviewer Screenshot](https://github.com/Souravjha69/CODE-REVIEWER/blob/main/Screenshot.png?raw=true)
 
 🚀 Future Enhancements
 	•	🧩 Multi-language support (Python, Java, C++, etc.)
