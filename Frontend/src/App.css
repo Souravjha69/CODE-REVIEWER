@@ -1,45 +1,212 @@
-*{
-  margin: 0%;
-  padding: 0%;
+/* 🌐 Base Reset */
+* {
+  margin: 0;
+  padding: 0;
   box-sizing: border-box;
 }
+
 html, body, #root {
   height: 100%;
   width: 100%;
+  font-family: "Inter", sans-serif;
+  background: radial-gradient(circle at top left, #0f0f0f, #1a1a1a, #000);
+  color: #fff;
+  overflow: hidden;
 }
-main{
+
+/* ⚙️ Main Layout */
+main {
+  display: flex;
   height: 100%;
   width: 100%;
   padding: 1.5rem;
-  display: flex;
   gap: 1rem;
 }
-main .left, main .right{
+
+/* 🧱 Panels */
+main .left,
+main .right {
   height: 100%;
   flex-basis: 50%;
-  border-radius: 0.7rem;
+  border-radius: 1rem;
+  overflow: hidden;
+  backdrop-filter: blur(15px);
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
-main .left{
-background-color: black;
-position: relative;
+
+main .left:hover,
+main .right:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 45px rgba(0, 0, 0, 0.75);
 }
-.left .code, .code pre, .code pre code  {
-  height: 100%;
-  width: 100%;
-  
+
+/* 🖋️ Code Editor Panel */
+main .left {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: rgba(30, 30, 30, 0.8);
 }
-main .left .review{
+
+.left .code {
+  flex: 1;
+  padding: 1rem;
+  overflow: hidden;
+}
+
+.code pre,
+.code code {
+  background: transparent !important;
+  color: #f8f8f2;
+}
+
+/* 🧠 Review Button */
+main .left .review {
   position: absolute;
   bottom: 1rem;
   right: 1rem;
-  background-color: rgb(220, 220, 241);
-  color: black;
-  padding: 0.5rem 2rem;
-  font-weight: 500;
-  border-radius: 0.7rem;
+  background: linear-gradient(135deg, #2563eb, #3b82f6);
+  color: #fff;
+  padding: 0.6rem 2rem;
+  font-weight: 600;
+  border-radius: 0.8rem;
   cursor: pointer;
   user-select: none;
+  border: none;
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+  transition: all 0.3s ease-in-out;
 }
-main .right{
-  background-color: rgb(107, 103, 103);
+
+main .left .review:hover {
+  transform: scale(1.06);
+  box-shadow: 0 6px 25px rgba(59, 130, 246, 0.6);
+  background: linear-gradient(135deg, #3b82f6, #60a5fa);
+}
+
+main .left .review:disabled {
+  background: linear-gradient(135deg, #334155, #475569);
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+/* 🤖 Right Panel - AI Review Display */
+main .right {
+  background: rgba(255, 255, 255, 0.07);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  color: #d1d5db;
+  font-family: "Fira Code", monospace;
+  font-size: 0.95rem;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  position: relative;
+}
+
+/* Scrollbar */
+main .right::-webkit-scrollbar {
+  width: 6px;
+}
+main .right::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.25);
+  border-radius: 10px;
+}
+
+/* 💬 Review Placeholder */
+.placeholder {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 1rem;
+  margin-top: 2rem;
+}
+
+/* 🔄 Loading Animation */
+.loading {
+  text-align: center;
+  color: #60a5fa;
+  font-weight: 500;
+  margin-top: 2rem;
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+/* 📦 Review Box */
+.review-box {
+  animation: fadeIn 0.6s ease-in-out;
+  line-height: 1.6;
+}
+
+.review-box h3 {
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.review-box ul {
+  list-style: none;
+  margin-left: 1rem;
+}
+
+.review-box li {
+  margin-bottom: 0.4rem;
+}
+
+/* 💻 Code Display Blocks */
+.code-block {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.8rem;
+  border-radius: 0.6rem;
+  color: #00ffb3;
+  font-size: 0.9rem;
+  overflow-x: auto;
+}
+
+/* 🧾 Final Verdict Box */
+.final {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.8rem;
+  border-radius: 0.6rem;
+  font-weight: 500;
+  color: #a5f3fc;
+  margin-top: 0.8rem;
+}
+
+/* 🚨 Error Message */
+.error {
+  color: #f87171;
+  text-align: center;
+  margin-top: 2rem;
+  font-weight: 600;
+}
+
+/* ✨ Fade Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease forwards;
+}
+
+.final.good {
+  background: rgba(34, 197, 94, 0.15);
+  color: #4ade80;
+  border: 1px solid rgba(34, 197, 94, 0.4);
+}
+
+.final.bad {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.4);
 }
