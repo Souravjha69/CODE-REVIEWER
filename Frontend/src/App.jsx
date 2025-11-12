@@ -6,6 +6,62 @@ import Editor from "react-simple-code-editor";
 import axios from "axios";
 import "./App.css";
 
+/* ---------- Utility functions ---------- */
+
+const getText = (obj, keys) => {
+  for (const k of keys) {
+    const v = obj?.[k];
+    if (typeof v === "string" && v.trim()) return v;
+  }
+  return "";
+};
+
+// Detect real syntax errors (not “no syntax errors found”)
+function hasSyntaxError(review) {
+  const s = (
+    getText(review, ["syntax", "finalVerdict", "review"]) || ""
+  ).toLowerCase();
+
+  if (/no\s+syntax\s+errors?\s+found/.test(s)) return false;
+
+  return /syntax\s*error|unexpected token|invalid syntax|missing\s*[;)]|unterminated|parse error|unbalanced/i.test(
+    s
+  );
+}
+
+// Detect actual logic/semantic problems
+function hasLogicError(review) {
+  const s = (
+    getText(review, ["finalVerdict", "bestPractices", "efficiency", "readability"]) ||
+    ""
+  ).toLowerCase();
+
+  const bad =
+    /logic (bug|error|fault)|incorrect result|wrong output|fails? (test|case)|undefined variable|reference error|runtime error|crash|security (risk|vulnerability)/i.test(
+      s
+    );
+
+  const good =
+    /well[-\s]?written|works as intended|correct|valid|no significant (issues|improvements)|clean|good code|meets requirements/i.test(
+      s
+    );
+
+  return bad && !good;
+}
+
+// Determine if the AI thinks code is “good”
+function isGood(review) {
+  const verdict = getText(review, ["finalVerdict", "review"]).toLowerCase();
+  const positive =
+    /well[-\s]?written|correct|valid|no significant (issues|improvements)|clean|works as intended|good code|meets requirements/i.test(
+      verdict
+    );
+  if (positive) return true;
+  return !hasSyntaxError(review) && !hasLogicError(review);
+}
+
+/* ---------- Component ---------- */
+
 export default function App() {
   const [code, setCode] = useState(`function sum(a, b) {
   return a + b;
@@ -13,21 +69,37 @@ export default function App() {
   const [review, setReview] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    Prism.highlightAll();
-  }, [code]);
+  const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3000";
+
+  useEffect(() => Prism.highlightAll(), [code]);
 
   async function reviewCode() {
     setLoading(true);
     setReview(null);
     try {
-      const response = await axios.post("http://localhost:3000/ai/get-review", {
-        code,
-      });
+      const { data } = await axios.post(`${API_BASE}/ai/get-review`, { code });
+      const norm =
+        typeof data === "object" && data !== null
+          ? data
+          : { review: String(data || ""), finalVerdict: String(data || "") };
 
-      setReview(response.data); // Store JSON response
-    } catch (error) {
-      console.error(error);
+      const shaped = {
+        syntax: norm.syntax ?? "",
+        bestPractices: norm.bestPractices ?? "",
+        efficiency: norm.efficiency ?? "",
+        readability: norm.readability ?? "",
+        finalVerdict: norm.finalVerdict ?? norm.review ?? "",
+        review: norm.review ?? "",
+      };
+
+      setReview({
+        ...shaped,
+        _isGood: isGood(shaped),
+        _hasSyntaxError: hasSyntaxError(shaped),
+        _hasLogicError: hasLogicError(shaped),
+      });
+    } catch (err) {
+      console.error(err);
       setReview({
         error: "Unable to connect to AI service. Please try again later.",
       });
@@ -35,6 +107,21 @@ export default function App() {
       setLoading(false);
     }
   }
+
+  const showBad =
+    review &&
+    !review.error &&
+    (review._hasSyntaxError || review._hasLogicError) &&
+    !review._isGood;
+
+  // Header title logic
+  const headerTitle = review
+    ? showBad
+      ? review._hasSyntaxError
+        ? "❌ Bad Code Detected"
+        : "⚠️ Wrong Code Detected"
+      : "🟢 Review & Suggestions"
+    : "";
 
   return (
     <main>
@@ -60,66 +147,52 @@ export default function App() {
             }}
           />
         </div>
-
         <button className="review" onClick={reviewCode} disabled={loading}>
           {loading ? "Reviewing..." : "Review"}
         </button>
       </div>
 
-      {/* RIGHT: AI Review */}
+      {/* RIGHT: Review Panel */}
       <div className="right">
         {!review && !loading && (
           <p className="placeholder">💡 Your AI review will appear here...</p>
         )}
-
         {loading && <p className="loading">Analyzing your code...</p>}
 
         {review && !review.error && (
-  <div className="review-box fade-in">
-    {/* ✅ Dynamically check if code is good or weak */}
-    {review.finalVerdict.toLowerCase().includes("well-written") ||
-    review.finalVerdict.toLowerCase().includes("no significant improvements") ? (
-      <>
-        <h3>🟢 Good Code:</h3>
-        <pre className="code-block">{code}</pre>
+          <div className="review-box fade-in">
+            <h3>{headerTitle}</h3>
+            <pre className="code-block">{code}</pre>
 
-        <h3>💡 Suggestions:</h3>
-        <ul>
-          <li>✨ {review.bestPractices}</li>
-          <li>⚙️ {review.efficiency}</li>
-          <li>🧠 {review.readability}</li>
-        </ul>
+            {(review.bestPractices ||
+              review.efficiency ||
+              review.readability ||
+              review.syntax) && (
+              <>
+                <h3>💡 Improvements:</h3>
+                <ul>
+                  {review.syntax && <li>❌ {review.syntax}</li>}
+                  {review.bestPractices && <li>✨ {review.bestPractices}</li>}
+                  {review.efficiency && <li>⚙️ {review.efficiency}</li>}
+                  {review.readability && <li>🧠 {review.readability}</li>}
+                </ul>
+              </>
+            )}
 
-        <h3>📋 Final Verdict:</h3>
-        <p className="final good">{review.finalVerdict}</p>
-      </>
-    ) : (
-      <>
-        <h3>❌ Bad Code:</h3>
-        <pre className="code-block">{code}</pre>
-
-        <h3>🔍 Issues:</h3>
-        <ul>
-          <li>❌ {review.syntax}</li>
-          <li>❌ {review.bestPractices}</li>
-        </ul>
-
-        <h3>✅ Recommended Fix:</h3>
-        <pre className="code-block">function sum(a, b) &#123; return a + b; &#125;</pre>
-
-        <h3>💡 Improvements:</h3>
-        <ul>
-          <li>⚙️ {review.efficiency}</li>
-          <li>🧠 {review.readability}</li>
-        </ul>
-
-        <h3>🧾 Final Verdict:</h3>
-        <p className="final bad">{review.finalVerdict}</p>
-      </>
-    )}
-  </div>
-)}
-
+            {review.finalVerdict && (
+              <>
+                <h3>📋 Final Verdict:</h3>
+                <p
+                  className={`final ${
+                    showBad ? "bad" : "good"
+                  }`}
+                >
+                  {review.finalVerdict}
+                </p>
+              </>
+            )}
+          </div>
+        )}
 
         {review?.error && <p className="error">{review.error}</p>}
       </div>
